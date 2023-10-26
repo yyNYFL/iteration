@@ -481,6 +481,81 @@ lotr_tidy =
     lotr_load_and_tidy(&quot;./LotR_Words.xlsx&quot;, &quot;J3:L6&quot;, &quot;return_king&quot;)) |&gt;
   select(movie, everything()) </code></pre>
 </div>
+<div id="nsduh" class="section level3">
+<h3>NSDUH</h3>
+<pre class="r"><code>nsduh_url = &quot;http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm&quot;
+
+nsduh_html = read_html(nsduh_url)
+
+data_marj = 
+  nsduh_html |&gt; 
+  html_table() |&gt; 
+  nth(1) |&gt;
+  slice(-1) |&gt; 
+  select(-contains(&quot;P Value&quot;)) |&gt;
+  pivot_longer(
+    -State,
+    names_to = &quot;age_year&quot;, 
+    values_to = &quot;percent&quot;) |&gt;
+  separate(age_year, into = c(&quot;age&quot;, &quot;year&quot;), sep = &quot;\\(&quot;) |&gt;
+  mutate(
+    year = str_replace(year, &quot;\\)&quot;, &quot;&quot;),
+    percent = str_replace(percent, &quot;[a-c]$&quot;, &quot;&quot;),
+    percent = as.numeric(percent)) |&gt;
+  filter(!(State %in% c(&quot;Total U.S.&quot;, &quot;Northeast&quot;, &quot;Midwest&quot;, &quot;South&quot;, &quot;West&quot;)))</code></pre>
+<p>Try to write a quick function.</p>
+<pre class="r"><code>nsduh_import = function(html, table_number, outcome_name){
+  
+  html |&gt; 
+  html_table() |&gt; 
+  nth(table_number) |&gt;
+  slice(-1) |&gt; 
+  select(-contains(&quot;P Value&quot;)) |&gt;
+  pivot_longer(
+    -State,
+    names_to = &quot;age_year&quot;, 
+    values_to = &quot;percent&quot;) |&gt;
+  separate(age_year, into = c(&quot;age&quot;, &quot;year&quot;), sep = &quot;\\(&quot;) |&gt;
+  mutate(
+    year = str_replace(year, &quot;\\)&quot;, &quot;&quot;),
+    percent = str_replace(percent, &quot;[a-c]$&quot;, &quot;&quot;),
+    percent = as.numeric(percent),
+    outcome = outcome_name) |&gt;
+  filter(!(State %in% c(&quot;Total U.S.&quot;, &quot;Northeast&quot;, &quot;Midwest&quot;, &quot;South&quot;, &quot;West&quot;)))
+  
+}
+
+nsduh_import(html = nsduh_html, table_number = 1, outcome_name = &quot;marj&quot;)</code></pre>
+<pre><code>## # A tibble: 510 × 5
+##    State   age   year      percent outcome
+##    &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;  
+##  1 Alabama 12+   2013-2014    9.98 marj   
+##  2 Alabama 12+   2014-2015    9.6  marj   
+##  3 Alabama 12-17 2013-2014    9.9  marj   
+##  4 Alabama 12-17 2014-2015    9.71 marj   
+##  5 Alabama 18-25 2013-2014   27.0  marj   
+##  6 Alabama 18-25 2014-2015   26.1  marj   
+##  7 Alabama 26+   2013-2014    7.1  marj   
+##  8 Alabama 26+   2014-2015    6.81 marj   
+##  9 Alabama 18+   2013-2014    9.99 marj   
+## 10 Alabama 18+   2014-2015    9.59 marj   
+## # ℹ 500 more rows</code></pre>
+<pre class="r"><code>nsduh_import(html = nsduh_html, table_number = 4, outcome_name = &quot;cocaine&quot;)</code></pre>
+<pre><code>## # A tibble: 510 × 5
+##    State   age   year      percent outcome
+##    &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;  
+##  1 Alabama 12+   2013-2014    1.23 cocaine
+##  2 Alabama 12+   2014-2015    1.22 cocaine
+##  3 Alabama 12-17 2013-2014    0.42 cocaine
+##  4 Alabama 12-17 2014-2015    0.41 cocaine
+##  5 Alabama 18-25 2013-2014    3.09 cocaine
+##  6 Alabama 18-25 2014-2015    3.2  cocaine
+##  7 Alabama 26+   2013-2014    1.01 cocaine
+##  8 Alabama 26+   2014-2015    0.99 cocaine
+##  9 Alabama 18+   2013-2014    1.31 cocaine
+## 10 Alabama 18+   2014-2015    1.31 cocaine
+## # ℹ 500 more rows</code></pre>
+</div>
 
 
 
