@@ -394,6 +394,92 @@ display: none;
 <pre><code>##  [1]  0.5952213  1.1732833 -0.6221352 -1.3990896 -1.4371950  1.4719158
 ##  [7] -0.4830567  0.4590828  0.4520244 -0.2100512</code></pre>
 <p>Keep checking.</p>
+<pre class="r"><code>mean_and_sd = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop(&quot;Argument x should be numeric&quot;)
+  } else if (length(x) == 1) {
+    stop(&quot;Cannot be computed for length 1 vectors&quot;)
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
+
+  list(mean = mean_x, 
+       sd = sd_x
+       )
+}</code></pre>
+<p>Double check</p>
+<pre class="r"><code>mean_and_sd(x_vec)</code></pre>
+<pre><code>## $mean
+## [1] 5.022955
+## 
+## $sd
+## [1] 0.2501806</code></pre>
+</div>
+<div id="start-getting-means-and-sds" class="section level3">
+<h3>Start getting means and sds</h3>
+<pre class="r"><code>x_vec = rnorm(n = 30, mean = 5, sd = .5)
+
+tibble(
+  mean = mean(x_vec),
+  sd = sd(x_vec)
+)</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  5.16 0.643</code></pre>
+<p>Let’s write a function that uses ‘n’ , a true mean and true SD as
+inputs</p>
+<pre class="r"><code>sim_mean_sd = function(n_obs, mu, sigma) {
+  
+  x_vec = rnorm(n = n_obs, mean = mu, sd = sigma)
+
+tibble(
+  mean = mean(x_vec),
+  sd = sd(x_vec)
+)
+}
+
+sim_mean_sd(n_obs = 30, mu = 5, sigma = .5)</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  5.22 0.543</code></pre>
+<pre class="r"><code>sim_mean_sd(12, 24, 4) #positional matching </code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  23.6  4.49</code></pre>
+<pre class="r"><code>fellowship_ring =
+  readxl::read_excel(&quot;./LotR_Words.xlsx&quot;, range = &quot;B3:D6&quot;) %&gt;% 
+  mutate(movie = &quot;fellowship_wing&quot;) %&gt;% 
+  janitor::clean_names()
+
+lotr_load_and_tidy = function(path = &quot;./LotR_Words.xlsx&quot;, cell_range, movie_name) {
+  
+  movie_df = 
+    readxl::read_excel(path, range = cell_range) |&gt;
+    janitor::clean_names() |&gt;
+    gather(key = sex, value = words, female:male) |&gt;
+    mutate(race = str_to_lower(race),
+           movie = movie_name) 
+    #pivot_longer(
+      #female:male,
+      #names_to = &quot;sex&quot;,
+      #values_to = &quot;words&quot;
+    #) can do pivot longer as well 
+  
+  movie_df
+  
+}
+
+lotr_tidy = 
+  bind_rows(
+    lotr_load_and_tidy(&quot;./LotR_Words.xlsx&quot;, &quot;B3:D6&quot;, &quot;fellowship_ring&quot;),
+    lotr_load_and_tidy(&quot;./LotR_Words.xlsx&quot;, &quot;F3:H6&quot;, &quot;two_towers&quot;),
+    lotr_load_and_tidy(&quot;./LotR_Words.xlsx&quot;, &quot;J3:L6&quot;, &quot;return_king&quot;)) |&gt;
+  select(movie, everything()) </code></pre>
 </div>
 
 

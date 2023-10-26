@@ -75,5 +75,88 @@ Keep checking.
 #z_score(iris)
 ```
 
+```{r}
+mean_and_sd = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop("Argument x should be numeric")
+  } else if (length(x) == 1) {
+    stop("Cannot be computed for length 1 vectors")
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
 
+  list(mean = mean_x, 
+       sd = sd_x
+       )
+}
+
+```
+
+Double check
+```{r}
+mean_and_sd(x_vec)
+```
+
+### Start getting means and sds
+```{r}
+
+x_vec = rnorm(n = 30, mean = 5, sd = .5)
+
+tibble(
+  mean = mean(x_vec),
+  sd = sd(x_vec)
+)
+```
+
+Let's write a function that uses 'n' , a true mean and true SD as inputs
+
+```{r}
+sim_mean_sd = function(n_obs, mu, sigma) {
+  
+  x_vec = rnorm(n = n_obs, mean = mu, sd = sigma)
+
+tibble(
+  mean = mean(x_vec),
+  sd = sd(x_vec)
+)
+}
+
+sim_mean_sd(n_obs = 30, mu = 5, sigma = .5)
+
+sim_mean_sd(12, 24, 4) #positional matching 
+```
+
+```{r}
+fellowship_ring =
+  readxl::read_excel("./LotR_Words.xlsx", range = "B3:D6") %>% 
+  mutate(movie = "fellowship_wing") %>% 
+  janitor::clean_names()
+
+lotr_load_and_tidy = function(path = "./LotR_Words.xlsx", cell_range, movie_name) {
+  
+  movie_df = 
+    readxl::read_excel(path, range = cell_range) |>
+    janitor::clean_names() |>
+    gather(key = sex, value = words, female:male) |>
+    mutate(race = str_to_lower(race),
+           movie = movie_name) 
+    #pivot_longer(
+      #female:male,
+      #names_to = "sex",
+      #values_to = "words"
+    #) can do pivot longer as well 
+  
+  movie_df
+  
+}
+
+lotr_tidy = 
+  bind_rows(
+    lotr_load_and_tidy("./LotR_Words.xlsx", "B3:D6", "fellowship_ring"),
+    lotr_load_and_tidy("./LotR_Words.xlsx", "F3:H6", "two_towers"),
+    lotr_load_and_tidy("./LotR_Words.xlsx", "J3:L6", "return_king")) |>
+  select(movie, everything()) 
+```
 
