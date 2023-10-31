@@ -357,7 +357,117 @@ display: none;
 </div>
 
 
+<pre class="r"><code>vec_numeric = 1:4
+vec_char = c(&quot;My&quot;, &quot;name&quot;, &quot;is&quot;, &quot;Youssra &quot;)
 
+tibble(
+  num = vec_numeric,
+  char = vec_char
+)</code></pre>
+<pre><code>## # A tibble: 4 × 2
+##     num char      
+##   &lt;int&gt; &lt;chr&gt;     
+## 1     1 &quot;My&quot;      
+## 2     2 &quot;name&quot;    
+## 3     3 &quot;is&quot;      
+## 4     4 &quot;Youssra &quot;</code></pre>
+<pre class="r"><code>vec_logical = c(TRUE, TRUE, TRUE, FALSE)</code></pre>
+<pre class="r"><code>l =
+  list(
+    vec_numeric = 1:5,
+vec_char = LETTERS,
+matrix = matrix(1:10, nrow = 5, ncol = 2),
+summary = summary(rnorm(100))
+  )</code></pre>
+<div id="accessing-lists" class="section level1">
+<h1>Accessing lists</h1>
+<pre class="r"><code>l$vec_char</code></pre>
+<pre><code>##  [1] &quot;A&quot; &quot;B&quot; &quot;C&quot; &quot;D&quot; &quot;E&quot; &quot;F&quot; &quot;G&quot; &quot;H&quot; &quot;I&quot; &quot;J&quot; &quot;K&quot; &quot;L&quot; &quot;M&quot; &quot;N&quot; &quot;O&quot; &quot;P&quot; &quot;Q&quot; &quot;R&quot; &quot;S&quot;
+## [20] &quot;T&quot; &quot;U&quot; &quot;V&quot; &quot;W&quot; &quot;X&quot; &quot;Y&quot; &quot;Z&quot;</code></pre>
+<pre class="r"><code>l[[2]]</code></pre>
+<pre><code>##  [1] &quot;A&quot; &quot;B&quot; &quot;C&quot; &quot;D&quot; &quot;E&quot; &quot;F&quot; &quot;G&quot; &quot;H&quot; &quot;I&quot; &quot;J&quot; &quot;K&quot; &quot;L&quot; &quot;M&quot; &quot;N&quot; &quot;O&quot; &quot;P&quot; &quot;Q&quot; &quot;R&quot; &quot;S&quot;
+## [20] &quot;T&quot; &quot;U&quot; &quot;V&quot; &quot;W&quot; &quot;X&quot; &quot;Y&quot; &quot;Z&quot;</code></pre>
+<pre class="r"><code>l[[&quot;summary&quot;]]</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+## -2.2147 -0.4942  0.1139  0.1089  0.6915  2.4016</code></pre>
+<div id="loops" class="section level3">
+<h3>Loops</h3>
+<pre class="r"><code>list_norm_samples = 
+  list(
+    a = rnorm(20, 1, 5),
+    b = rnorm(20, 0, 7),
+    c = rnorm(20, 20, 1),
+    d = rnorm(20, -45, 13)
+  )</code></pre>
+<pre class="r"><code>mean_and_sd = function(x) {
+  
+  if (!is.numeric(x)) {
+    stop(&quot;Argument x should be numeric&quot;)
+  } else if (length(x) == 1) {
+    stop(&quot;You need at lease 2 numbers to get z scores&quot;)
+  }
+  
+  mean_x = mean(x)
+  sd_x = sd(x)
+
+  tibble(
+    mean = mean_x,
+    sd = sd_x
+  )
+}</code></pre>
+<pre class="r"><code>mean_and_sd(list_norm_samples$a)</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  1.57  4.07</code></pre>
+<pre class="r"><code>mean_and_sd(list_norm_samples$b)</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 -1.52  4.68</code></pre>
+<pre class="r"><code>mean_and_sd(list_norm_samples$c)</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  19.6  1.18</code></pre>
+<pre class="r"><code>mean_and_sd(list_norm_samples$d)</code></pre>
+<pre><code>## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 -38.7  12.7</code></pre>
+<pre class="r"><code>output = vector(&quot;list&quot;, length = 4)
+
+for (i in 1:4) {
+  
+  output[[i]] = mean_and_sd(list_norm_samples[[i]])
+  
+}
+output</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  1.57  4.07
+## 
+## [[2]]
+## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 -1.52  4.68
+## 
+## [[3]]
+## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1  19.6  1.18
+## 
+## [[4]]
+## # A tibble: 1 × 2
+##    mean    sd
+##   &lt;dbl&gt; &lt;dbl&gt;
+## 1 -38.7  12.7</code></pre>
+</div>
+</div>
 
 
 
