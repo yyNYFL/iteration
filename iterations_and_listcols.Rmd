@@ -92,3 +92,10 @@ output
 
 ```
 
+### use 'map'
+```{r}
+output = map(list_norm_samples, mean_and_sd)
+output2 = map(list_norm_samples, median)
+output3 = map(list_norm_samples, summary)
+```
+
