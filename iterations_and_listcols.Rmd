@@ -1,0 +1,15 @@
+---
+title: "iterations and listcols"
+author: "Youssra Yemmas"
+date: "2023-10-31"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(tidyverse)
+library(rvest)
+knitr::opts_chunk$set(echo = TRUE)
+set.seed(1)
+```
+
